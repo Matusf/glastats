@@ -24,6 +24,3 @@ class LinearRegression(object):
     def fit(self, x, y):
         beta = sample_covariance(x, y) / sample_variance(x)
         alpha = self._y_bar - _beta * self._x_bar
-
-    def plot(self):
-        pass
