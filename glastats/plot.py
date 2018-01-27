@@ -20,16 +20,21 @@ class Plot(tk.Frame):
         self.pack()
         self._create_canvas()
 
-    def _scale_data(self, seq, a, b):
-        return [(data_point - a) / b for data_point in seq]
+    def _scale_data(self, seq, minimum, data_range):
+        return ((data_point - minimum) / data_range for data_point in seq)
 
     def _prepare(self, x, y):
-        self._draw_axes()
-        self._draw_scales()
         max_x, min_x, max_y, min_y = max(x), min(x), max(y), min(y)
         x_range, y_range = max_x - min_x, max_y - min_y
-        # global_max = max(max_x, max_y)
-        return self._scale_data(x, min_x, x_range), self._scale_data(y, min_y, y_range)
+
+        scaled_x = self._scale_data(x, min_x, x_range)
+        scaled_y =  self._scale_data(y, min_y, y_range)
+
+        self._draw_axes()
+        # self._draw_scales(x_range, y_range)
+
+        return scaled_x, scaled_y
+
 
     def _create_canvas(self):
         self._canvas = tk.Canvas(self, height=self._height, width=self._width, bg='white')
@@ -41,17 +46,24 @@ class Plot(tk.Frame):
         self._canvas.create_line(self._origin_x, self._origin_y,
                                  self._origin_x, self._height - self._size_y)
 
-    def _draw_scales(self):
-        x_units = 25
-        y_units = 25
+    def _draw_scales(self, x, y):
+        x_unit = 50
+        y_unit = 50
+        print(x_range / x_unit, y_range / y_unit)
+        x_scaled, y_scaled = x_range / x_unit, y_range / y_unit
+
+
         # Horizontal
-        for x in range(self._origin_x, self._size_x, x_units):
+        i = 0
+        for x in range(self._origin_x, self._size_x, x_unit):
             self._canvas.create_line(x, self._origin_y, x, self._origin_y + 5)
+            self._canvas.create_text(x, self._origin_y + 15, text=round(i *  x_scaled, 1))
+            i += 1
         # Vertical
-        for y in range(self._origin_y, 50, -y_units):
+        for y in range(self._origin_y, 50, -y_unit):
             self._canvas.create_line(self._origin_x, y, self._origin_x - 5, y)
 
-    def scatter(self, x, y, connect=False, width=4, fill='#5E88D4'):
+    def scatter(self, x, y, connect=False, width=3, fill='#5E88D4'):
         x, y = self._prepare(x, y)
         prev_x = prev_y = None
         for x_i, y_i in zip(x, y):
@@ -74,5 +86,5 @@ class Plot(tk.Frame):
 root = tk.Tk()
 app = Plot(master=root)
 # app.scatter(list(range(1, 14)), list(map(exp, range(1, 14))), True)
-app.scatter(list(range(1, 14)), list(map(exp, range(1, 14))))
+app.scatter(list(range(3, 14)), list(map(exp, range(3, 14, 1))))
 app.mainloop()
