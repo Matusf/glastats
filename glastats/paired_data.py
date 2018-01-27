@@ -20,8 +20,8 @@ def sample_correlation(sxy, sxx, syy, precision=4):
 
 
 def sample_covariance(x, y, precision=4):
-    x_bar =  mean(x)
-    y_bar =  mean(y)
+    x_bar = mean(x)
+    y_bar = mean(y)
     n = len(x)
 
     cov = sum((x_i - x_bar) * (y_i - y_bar) for x_i, y_i in zip(x, y)) / (n - 1)
